@@ -143,7 +143,7 @@ Humanoid.prototype.greet = function() {
   Villain.prototype = Object.create(Humanoid.prototype)
   Villain.prototype.attack = function(damage) {
     hero.healthPoints = hero.healthPoints - damage;
-    if(hero.healthPoints <= 0) { return 'The hero attacked the villian. ' + hero.destroy()}
+    if(hero.healthPoints <= 0) { return 'The villain attacked the hero. ' + hero.destroy()}
     else { return `The villain attacked the hero.  The hero now has ${hero.healthPoints} health points.` }
   }
 
@@ -194,4 +194,6 @@ Humanoid.prototype.greet = function() {
 
   
   console.log(villain.attack(villain.weapons.Bow))
+  console.log(hero.attack(hero.weapons.Dagger))
+  console.log(villain.attack(villain.weapons.Dagger))
   console.log(hero.attack(hero.weapons.Sword))
