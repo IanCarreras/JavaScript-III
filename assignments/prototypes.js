@@ -15,6 +15,14 @@
   * dimensions (These represent the character's size in the video game)
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
+function GameObject(attrs) {
+  this.createdAt = attrs.createdAt;
+  this.name = attrs.name;
+  this.dimensions = attrs.dimensions;
+}
+GameObject.prototype.destroy = function() {
+  return `${this.name} was removed from the game.`
+}
 
 /*
   === CharacterStats ===
@@ -22,6 +30,14 @@
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+function CharacterStats(characterStatsAttrs) {
+  GameObject.call(this, characterStatsAttrs)
+  this.healthPoints = characterStatsAttrs.healthPoints;
+}
+CharacterStats.prototype = Object.create(GameObject.prototype)
+CharacterStats.prototype.takeDamage = function() {
+  return `${this.name} took damage.`
+}
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -32,16 +48,28 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
- 
+function Humanoid(humanoidAttrs) {
+  CharacterStats.call(this, humanoidAttrs)
+  this.team = humanoidAttrs.team;
+  this.weapons = humanoidAttrs.weapons;
+  this.language = humanoidAttrs.language;
+}
+Humanoid.prototype = Object.create(CharacterStats.prototype)
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers a greeting in ${this.language}.`
+}
+
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
   * Instances of CharacterStats should have all of the same properties as GameObject.
 */
 
+
+
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -57,7 +85,7 @@
     ],
     language: 'Common Tongue',
   });
-
+  console.log(mage)
   const swordsman = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +130,70 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Villain(villainAttrs) {
+    Humanoid.call(this, villainAttrs)
+  }
+  Villain.prototype = Object.create(Humanoid.prototype)
+  Villain.prototype.attack = function(damage) {
+    hero.healthPoints = hero.healthPoints - damage;
+    if(hero.healthPoints <= 0) { return 'The villain attacked the hero. ' + hero.destroy()}
+    else { return `The villain attacked the hero.  The hero now has ${hero.healthPoints} health points.` }
+  }
+
+  function Hero(heroAttrs) {
+    Humanoid.call(this, heroAttrs)
+  }
+  Hero.prototype = Object.create(Humanoid.prototype)
+  Hero.prototype.attack = function(damage) {
+    villain.healthPoints = villain.healthPoints - damage;
+    if(villain.healthPoints <= 0) { return 'The hero attacked the villian. ' + villain.destroy()}
+    else { return `The hero attacked the villain.  The villain now has ${villain.healthPoints} health points.` }
+  }
+
+  const villain = new Villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 4,
+    },
+    healthPoints: 10,
+    name: 'Villain',
+    team: 'bad guys',
+    weapons: {
+      'Bow': 1,
+      'Dagger': 2
+    },
+    language: 'villain',
+  });
+
+  const hero = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 4,
+    },
+    healthPoints: 10,
+    name: 'Hero',
+    team: 'good guys',
+    weapons: {
+      'Bow': 1,
+      'Dagger': 2,
+      'Sword': 10
+    },
+    language: 'hero',
+  });
+
+  
+  console.log(villain.attack(villain.weapons.Bow))
+  console.log(hero.attack(hero.weapons.Dagger))
+  console.log(villain.attack(villain.weapons.Dagger))
+  console.log(hero.attack(hero.weapons.Sword))
